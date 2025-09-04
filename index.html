@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Plataforma de Mantenimiento</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background: linear-gradient(135deg, #25D366 0%, #075E54 100%);
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 20px;
+		}
+
+		.container {
+			background: white;
+			border-radius: 20px;
+			padding: 40px;
+			box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+			max-width: 600px;
+			width: 100%;
+			animation: slideIn 0.5s ease-out;
+		}
+
+		@keyframes slideIn {
+			from {
+				transform: translateY(30px);
+				opacity: 0;
+			}
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
+		}
+
+		.header {
+			text-align: center;
+			margin-bottom: 30px;
+		}
+
+		.maintenance-icon {
+			width: 60px;
+			height: 60px;
+			background: #dc2626;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 0 auto 20px;
+			color: white;
+			font-size: 30px;
+		}
+
+		h1 {
+			color: #075E54;
+			margin-bottom: 10px;
+			font-size: 24px;
+			font-weight: 700;
+		}
+
+		.subtitle {
+			color: #666;
+			font-size: 16px;
+		}
+
+		.form-group {
+			margin-bottom: 25px;
+		}
+
+		label {
+			display: block;
+			margin-bottom: 8px;
+			font-weight: 600;
+			color: #333;
+		}
+
+		input, textarea, select {
+			width: 100%;
+			padding: 15px;
+			border: 2px solid #e0e0e0;
+			border-radius: 10px;
+			font-size: 16px;
+			transition: all 0.3s ease;
+			font-family: inherit;
+		}
+
+		input:focus, textarea:focus, select:focus {
+			outline: none;
+			border-color: #25D366;
+			box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+		}
+
+		textarea {
+			resize: vertical;
+			min-height: 120px;
+		}
+
+		.input-with-prefix {
+			position: relative;
+		}
+
+		.input-prefix {
+			position: absolute;
+			left: 15px;
+			top: 50%;
+			transform: translateY(-50%);
+			color: #666;
+			font-weight: 600;
+			pointer-events: none;
+		}
+
+		.input-with-prefix input {
+			padding-left: 35px;
+		}
+
+		.btn-container {
+			display: flex;
+			gap: 15px;
+			margin-top: 30px;
+		}
+
+		.btn {
+			flex: 1;
+			padding: 15px 25px;
+			border: none;
+			border-radius: 10px;
+			font-size: 16px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 10px;
+		}
+
+		.btn-primary {
+			background: #dc2626;
+			color: white;
+		}
+
+		.btn-primary:hover {
+			background: #b91c1c;
+			transform: translateY(-2px);
+			box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+		}
+
+		.btn-secondary {
+			background: #f3f4f6;
+			color: #374151;
+		}
+
+		.btn-secondary:hover {
+			background: #e5e7eb;
+		}
+
+		.btn:disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+			transform: none !important;
+		}
+
+		.method-selector {
+			display: flex;
+			gap: 10px;
+			margin-bottom: 20px;
+		}
+
+		.method-btn {
+			flex: 1;
+			padding: 12px;
+			border: 2px solid #e0e0e0;
+			background: white;
+			border-radius: 8px;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			text-align: center;
+			font-weight: 600;
+			font-size: 14px;
+		}
+
+		.method-btn.active {
+			border-color: #dc2626;
+			background: #fef2f2;
+			color: #dc2626;
+		}
+
+		.alert {
+			padding: 15px;
+			border-radius: 10px;
+			margin: 20px 0;
+			font-weight: 500;
+			animation: fadeIn 0.3s ease-out;
+		}
+
+		@keyframes fadeIn {
+			from { opacity: 0; transform: translateY(-10px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		.alert-success {
+			background: #dcfce7;
+			color: #166534;
+			border: 1px solid #bbf7d0;
+		}
+
+		.alert-error {
+			background: #fef2f2;
+			color: #dc2626;
+			border: 1px solid #fecaca;
+		}
+
+		.alert-info {
+			background: #eff6ff;
+			color: #1d4ed8;
+			border: 1px solid #bfdbfe;
+		}
+
+		.loading {
+			display: inline-block;
+			width: 20px;
+			height: 20px;
+			border: 2px solid #ffffff;
+			border-radius: 50%;
+			border-top-color: transparent;
+			animation: spin 1s ease-in-out infinite;
+		}
+
+		@keyframes spin {
+			to { transform: rotate(360deg); }
+		}
+
+		.preview {
+			background: #f8fafc;
+			border: 1px solid #e2e8f0;
+			border-radius: 10px;
+			padding: 15px;
+			margin-top: 15px;
+			font-family: monospace;
+			font-size: 14px;
+			color: #475569;
+		}
+
+		.priority-high { color: #dc2626; }
+		.priority-medium { color: #f59e0b; }
+		.priority-low { color: #16a34a; }
+
+		@media (max-width: 600px) {
+			.container {
+				padding: 30px 20px;
+				margin: 10px;
+			}
+			
+			.btn-container {
+				flex-direction: column;
+			}
+			
+			.method-selector {
+				flex-direction: column;
+			}
+
+			h1 {
+				font-size: 20px;
+			}
+		}
+	</style>
+</head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<body>
+	<div class="container">
+		<div class="header">
+			<div class="maintenance-icon"></div>
+			<h1>PLATAFORMA DE MANTENIMIENTO</h1>
+			<p class="subtitle">Reporta fallos y solicita mantenimiento de equipos</p>
+		</div>
+
+		<div class="method-selector">
+			<div class="method-btn active" onclick="switchMethod('maintenance')">SOLICITUD DE MANTENIMIENTO</div>
+			<div class="method-btn" onclick="switchMethod('inventory')">INVENTARIO</div>
+		</div>
+
+		<form id="maintenanceForm">
+			<!-- InformaciÃ³n del Usuario -->
+			<div class="form-group">
+				<label for="fullName">Nombre Completo</label>
+				<div class="input-with-prefix">
+					<span class="input-prefix"></span>
+					<input type="text" id="fullName" name="fullName" placeholder="Juan Camilo Vargas Losada" required>
+				</div>
+				<small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">
+					Como aparece en el documento de identidad
+				</small>
+			</div>
+			
+			<div class="form-group">
+				<label for="idNumber">Numero de Identificacion</label>
+				<div class="input-with-prefix">
+					<span class="input-prefix"></span>
+					<input type="text" id="idNumber" name="idNumber" placeholder="1085337222" required>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label for="position">Cargo</label>
+				<div class="input-with-prefix">
+					<span class="input-prefix"></span>
+					<input type="text" id="position" name="position" placeholder="Jefe de enfermeri­a" required>
+				</div>
+			</div>
+
+			<!-- InformaciÃ³n del Equipo -->
+		
+
+			<div class="form-group">
+				<label for="equipmentName">Nombre del Equipo</label>
+				<div class="input-with-prefix">
+					<span class="input-prefix"></span>
+					<input type="text" id="equipmentName" name="equipmentName" placeholder="Monitor de signos vitales" required>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="location">Ubicacion</label>
+				<select id="location" name="location" required>
+					<option value="">Selecciona la ubicacion</option>
+					<option value="uci">UCI - Unidad de Cuidados Intensivos</option>
+					<option value="urgencias">Urgencias</option>
+					<option value="hospitalizacion">Hospitalizacion</option>
+					<option value="quirofanos">Quirofanos</option>
+					<option value="laboratorio">Laboratorio</option>
+					<option value="radiologia">Radiologi­a</option>
+					<option value="farmacia">Farmacia</option>
+					<option value="consulta_externa">Consulta Externa</option>
+					<option value="otros">Otros</option>
+				</select>
+			</div>
+
+			<!-- InformaciÃ³n de la Falla -->
+			<div class="form-group">
+				<label for="faultDescription">Descripcion de la Falla</label>
+				<textarea id="faultDescription" name="faultDescription" placeholder="Describe detalladamente el problema detectado en el equipo..." required></textarea>
+			</div>
+
+			<div class="form-group">
+				<label for="priority">Nivel de Prioridad</label>
+				<select id="priority" name="priority" required>
+					<option value="high">Prioridad Alta (Cri­tica - Respuesta Inmediata)</option>
+					<option value="medium">Prioridad Media (Importante - Respuesta Programada)</option>
+					<option value="low">Prioridad Baja (Programada - Respuesta Diferida)</option>
+				</select>
+			</div>
+
+			<!-- NÃºmero de WhatsApp del TÃ©cnico -->
+			<div class="form-group">
+				<label for="technicianPhone">WhatsApp del Tecnico de Mantenimiento</label>
+				<div class="input-with-prefix">
+					<span class="input-prefix">+</span>
+					<input type="tel" id="technicianPhone" name="technicianPhone" placeholder="573001234567" required>
+				</div>
+				<small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">
+					Incluye codigo de pai­s (ej: 57 para Colombia)
+				</small>
+			</div>
+
+			<div class="preview" id="messagePreview"></div>
+
+			<div class="btn-container">
+				<button type="submit" class="btn btn-primary" id="sendBtn">
+					<span id="sendText">Enviar Reporte</span>
+					<div class="loading" id="loadingSpinner" style="display: none;"></div>
+				</button>
+				<button type="button" class="btn btn-secondary" onclick="clearForm()">
+					Limpiar
+				</button>
+			</div>
+		</form>
+
+		<div id="alertContainer"></div>
+
+		<div class="alert alert-info" style="margin-top: 30px;">
+			<strong>Informacion importante:</strong><br>
+			El reporte se envÃia directamente al tecnico de mantenimiento<br>
+			Se abre WhatsApp Web automÃ¡ticamente con el mensaje estructurado<br>
+			Asegarate de completar todos los campos para un mejor seguimiento
+		</div>
+	</div>
+
+	<script>
+		let currentMethod = 'maintenance';
+		
+		// Elementos del DOM
+		const form = document.getElementById('maintenanceForm');
+		const inputs = {
+			fullName: document.getElementById('fullName'),
+			idNumber: document.getElementById('idNumber'),
+			position: document.getElementById('position'),
+			equipmentId: document.getElementById('equipmentId'),
+			equipmentName: document.getElementById('equipmentName'),
+			location: document.getElementById('location'),
+			faultDescription: document.getElementById('faultDescription'),
+			priority: document.getElementById('priority'),
+			technicianPhone: document.getElementById('technicianPhone')
+		};
+		
+		const messagePreview = document.getElementById('messagePreview');
+		const sendBtn = document.getElementById('sendBtn');
+		const sendText = document.getElementById('sendText');
+		const loadingSpinner = document.getElementById('loadingSpinner');
+		const alertContainer = document.getElementById('alertContainer');
+
+		// Cambiar mÃ©todo
+		function switchMethod(method) {
+			currentMethod = method;
+			
+			// Actualizar botones activos
+			document.querySelectorAll('.method-btn').forEach(btn => {
+				btn.classList.remove('active');
+			});
+			event.target.classList.add('active');
+			
+			if (method === 'inventory') {
+				showAlert('Modulo de inventario en desarrollo. Por favor usa "Solicitud de Mantenimiento".', 'info');
+				// Reactivar el botÃ³n de mantenimiento
+				setTimeout(() => {
+					document.querySelectorAll('.method-btn').forEach(btn => {
+						btn.classList.remove('active');
+					});
+					document.querySelector('.method-btn[onclick="switchMethod(\'maintenance\')"]').classList.add('active');
+					currentMethod = 'maintenance';
+				}, 2000);
+			}
+			
+			updatePreview();
+		}
+
+		// Actualizar vista previa del mensaje
+		function updatePreview() {
+			const data = {};
+			Object.keys(inputs).forEach(key => {
+				data[key] = inputs[key].value;
+			});
+			
+			if (!data.fullName && !data.faultDescription) {
+				messagePreview.innerHTML = '<em style="color: #666;">La vista previa aparecera aqui­ cuando completes los campos...</em>';
+				return;
+			}
+
+			// Formatear prioridad
+			let priorityText = '';
+			let priorityClass = '';
+			switch(data.priority) {
+				case 'high':
+					priorityText = 'PRIORIDAD ALTA (CRITICA)';
+					priorityClass = 'priority-high';
+					break;
+				case 'medium':
+					priorityText = 'PRIORIDAD MEDIA';
+					priorityClass = 'priority-medium';
+					break;
+				case 'low':
+					priorityText = 'PRIORIDAD BAJA';
+					priorityClass = 'priority-low';
+					break;
+				default:
+					priorityText = 'Sin especificar';
+			}
+
+			// Crear mensaje estructurado
+			const message = `
+**REPORTE DE MANTENIMIENTO** ðŸ¥
+
+**INFORMACIÃ“N DEL SOLICITANTE:**
+Nombre: ${data.fullName || 'No especificado'}
+ID: ${data.idNumber || 'No especificado'}
+Cargo: ${data.position || 'No especificado'}
+
+**INFORMACIÃ“N DEL EQUIPO:**
+Codigo: ${data.equipmentId || 'No especificado'}
+Equipo: ${data.equipmentName || 'No especificado'}
+UbicaciÃ³n: ${data.location || 'No especificado'}
+
+**DETALLE DE LA FALLA:**
+${data.faultDescription || 'No especificado'}
+
+**PRIORIDAD:**
+${priorityText}
+
+Fecha: ${new Date().toLocaleDateString('es-CO')}
+Hora: ${new Date().toLocaleTimeString('es-CO')}
+			`.trim();
+			
+			messagePreview.innerHTML = `
+				<strong>Para:</strong> +${data.technicianPhone || 'No especificado'}<br>
+				<strong>Tipo:</strong> Reporte de Mantenimiento<br>
+				<strong class="${priorityClass}">Prioridad:</strong> <span class="${priorityClass}">${priorityText}</span><br><br>
+				<strong>Vista previa del mensaje:</strong><br>
+				<div style="background: white; padding: 15px; border-radius: 5px; margin-top: 10px; white-space: pre-wrap; border-left: 4px solid #dc2626;">${message}</div>
+			`;
+		}
+
+		// Event listeners para actualizar preview
+		Object.values(inputs).forEach(input => {
+			input.addEventListener('input', updatePreview);
+			input.addEventListener('change', updatePreview);
+		});
+
+		// Funcion para mostrar alertas
+		function showAlert(message, type = 'info') {
+			const alert = document.createElement('div');
+			alert.className = `alert alert-${type}`;
+			alert.innerHTML = message;
+			
+			alertContainer.innerHTML = '';
+			alertContainer.appendChild(alert);
+			
+			setTimeout(() => {
+				if (alert.parentNode) {
+					alert.remove();
+				}
+			}, 5000);
+		}
+
+		// Validar telofono
+		function validatePhone(phone) {
+			const phoneRegex = /^\d{10,15}$/;
+			return phoneRegex.test(phone.replace(/\s+/g, ''));
+		}
+
+		// Generar mensaje estructurado
+		function generateMessage() {
+			const data = {};
+			Object.keys(inputs).forEach(key => {
+				data[key] = inputs[key].value;
+			});
+
+			let priorityText = '';
+			switch(data.priority) {
+				case 'high':
+					priorityText = 'PRIORIDAD ALTA (CRITICA - RESPUESTA INMEDIATA)';
+					break;
+				case 'medium':
+					priorityText = 'PRIORIDAD MEDIA (IMPORTANTE - RESPUESTA PROGRAMADA)';
+					break;
+				case 'low':
+					priorityText = 'PRIORIDAD BAJA (PROGRAMADA - RESPUESTA DIFERIDA)';
+					break;
+			}
+
+			return `*INFORMACIÓN DEL SOLICITANTE:*\nNombre: ${data.fullName}\nID: ${data.idNumber}\nCargo: ${data.position}\n\n*INFORMACIÓN DEL EQUIPO:*\nEquipo: ${data.equipmentName}\nUbicación: ${data.location}\n\n*PRIORIDAD:*\n${priorityText}\n\n*DETALLE DE LA FALLA:*\n${data.faultDescription}\n\nFecha: ${new Date().toLocaleDateString('es-CO')}\nHora: ${new Date().toLocaleTimeString('es-CO')}`;
+		}
+
+		// Enviar via WhatsApp Web
+		function sendViaWhatsApp(phone, message) {
+			const encodedMessage = encodeURIComponent(message);
+			const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
+			
+			window.open(whatsappUrl, '_blank');
+			showAlert('Reporte enviado! Se abria WhatsApp Web con el mensaje estructurado.', 'success');
+		}
+
+		// Manejar envio del formulario
+		form.addEventListener('submit', async function(e) {
+			e.preventDefault();
+			
+			// Validar campos requeridos
+			const requiredFields = ['fullName', 'idNumber', 'position', 'equipmentId', 'equipmentName', 'location', 'faultDescription', 'priority', 'technicianPhone'];
+			let isValid = true;
+			
+			requiredFields.forEach(field => {
+				if (!inputs[field].value.trim()) {
+					isValid = false;
+					inputs[field].style.borderColor = '#dc2626';
+				} else {
+					inputs[field].style.borderColor = '#e0e0e0';
+				}
+			});
+			
+			if (!isValid) {
+				showAlert('Por favor completa todos los campos obligatorios.', 'error');
+				return;
+			}
+			
+			if (!validatePhone(inputs.technicianPhone.value)) {
+				showAlert('Por favor ingresa un numero de WhatsApp va¡lido (10 digitos).', 'error');
+				inputs.technicianPhone.style.borderColor = '#dc2626';
+				return;
+			}
+			
+			// Mostrar estado de carga
+			sendBtn.disabled = true;
+			sendText.style.display = 'none';
+			loadingSpinner.style.display = 'inline-block';
+			
+			try {
+				const message = generateMessage();
+				sendViaWhatsApp(inputs.technicianPhone.value, message);
+			} catch (error) {
+				showAlert('Ocurria un error inesperado. Por favor intenta de nuevo.', 'error');
+				console.error('Error:', error);
+			} finally {
+				// Restaurar estado del boton
+				setTimeout(() => {
+					sendBtn.disabled = false;
+					sendText.style.display = 'inline';
+					loadingSpinner.style.display = 'none';
+				}, 1000);
+			}
+		});
+
+		// Limpiar formulario
+		function clearForm() {
+			form.reset();
+			messagePreview.innerHTML = '<em style="color: #666;">La vista previa aparecera¡ aquÃ­ cuando completes los campos...</em>';
+			alertContainer.innerHTML = '';
+			
+			// Resetear colores de borde
+			Object.values(inputs).forEach(input => {
+				input.style.borderColor = '#e0e0e0';
+			});
+		}
+
+		// Formatear automaticamente el numero de telefono
+		inputs.technicianPhone.addEventListener('input', function(e) {
+			let value = e.target.value.replace(/\D/g, '');
+			e.target.value = value;
+		});
+
+		// Formatear automaticamente el numero de identificacion
+		inputs.idNumber.addEventListener('input', function(e) {
+			let value = e.target.value.replace(/\D/g, '');
+			e.target.value = value;
+		});
+
+		// Inicializar preview
+		updatePreview();
+	</script>
+</body>
+</html>
